@@ -1,6 +1,6 @@
 import { useId, useState, type ReactNode } from 'react'
 import { AnimatePresence, m } from 'motion/react'
-import { moreProjects, profile, runweave, tracelens, type Detail } from '../content'
+import { moreProjects, profile, runweave, scoutflow, type Detail } from '../content'
 import { CopyButton } from './CopyButton'
 import { ArrowUpRight } from './icons'
 
@@ -76,16 +76,16 @@ function Lang({ lang }: { lang: string }) {
   )
 }
 
-function StampedeChart() {
-  const p = tracelens.proof
+function EvalChart() {
+  const p = scoutflow.proof
   return (
     <figure className="proof">
       <figcaption className="proof-title">{p.title}</figcaption>
       <table className="bars">
         <thead className="sr-only">
           <tr>
-            <th scope="col">Condition</th>
-            <th scope="col">SQL reads</th>
+            <th scope="col">Category</th>
+            <th scope="col">Cases passed</th>
           </tr>
         </thead>
         <tbody>
@@ -94,16 +94,20 @@ function StampedeChart() {
               <th scope="row">{r.label}</th>
               <td>
                 <span className="bar-track">
-                  <m.span
-                    className="bar"
-                    data-zero={r.value === 0 || undefined}
-                    initial={{ scaleX: 0 }}
-                    whileInView={{ scaleX: 1 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ duration: 0.7, ease: EASE }}
-                    style={{ width: `${Math.max((r.value / p.max) * 100, 0)}%` }}
-                  />
-                  <span className="bar-value">{r.value}</span>
+                  <span className="bar-rail">
+                    <m.span
+                      className="bar"
+                      initial={{ scaleX: 0 }}
+                      whileInView={{ scaleX: 1 }}
+                      viewport={{ once: true, margin: '-40px' }}
+                      transition={{ duration: 0.7, ease: EASE }}
+                      style={{ width: `${(r.value / r.max) * 100}%` }}
+                    />
+                  </span>
+                  <span className="bar-value">
+                    {r.value}
+                    <span className="bar-of"> / {r.max}</span>
+                  </span>
                 </span>
               </td>
             </tr>
@@ -148,22 +152,6 @@ export function Projects() {
       </header>
 
       <div className="featured">
-        <article className="feature" aria-labelledby="p-tracelens">
-          <div className="feature-head">
-            <h3 id="p-tracelens">{tracelens.name}</h3>
-            <Lang lang={tracelens.language} />
-          </div>
-          <p className="feature-summary">{tracelens.summary}</p>
-          <StampedeChart />
-          <p className="stack-line">{tracelens.stack.join(', ')}</p>
-          <div className="feature-foot">
-            <SourceLink href={tracelens.repo} name={tracelens.name} />
-          </div>
-          <Disclosure label="How TraceLens works">
-            <Details items={tracelens.details} />
-          </Disclosure>
-        </article>
-
         <article className="feature" aria-labelledby="p-runweave">
           <div className="feature-head">
             <h3 id="p-runweave">{runweave.name}</h3>
@@ -177,6 +165,26 @@ export function Projects() {
           </div>
           <Disclosure label="How RunWeave works">
             <Details items={runweave.details} />
+          </Disclosure>
+        </article>
+
+        <article className="feature" aria-labelledby="p-scoutflow">
+          <div className="feature-head">
+            <h3 id="p-scoutflow">{scoutflow.name}</h3>
+            <Lang lang={scoutflow.language} />
+          </div>
+          <p className="feature-summary">{scoutflow.summary}</p>
+          <EvalChart />
+          <p className="stack-line">{scoutflow.stack.join(', ')}</p>
+          <div className="feature-foot more-links">
+            <SourceLink href={scoutflow.repo} name={scoutflow.name} />
+            <a className="text-link" href={scoutflow.evalLink.href} target="_blank" rel="noreferrer">
+              {scoutflow.evalLink.label}
+              <ArrowUpRight />
+            </a>
+          </div>
+          <Disclosure label="How ScoutFlow works">
+            <Details items={scoutflow.details} />
           </Disclosure>
         </article>
       </div>

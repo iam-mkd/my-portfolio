@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, m } from 'motion/react'
-import { moreProjects, profile, runweave, tracelens } from '../content'
+import { moreProjects, profile, runweave, scoutflow } from '../content'
 import { goToSection } from '../navigate'
 import { copyText } from '../clipboard'
 import { Search } from './icons'
@@ -30,7 +30,7 @@ function PaletteBody({ onClose, onToggleTheme, theme }: Props) {
       nav: true,
       run: () => goToSection(id),
     })
-    const projects = [tracelens, runweave, ...moreProjects]
+    const projects = [runweave, scoutflow, ...moreProjects]
     return [
       section('work', 'Go to selected work'),
       section('experience', 'Go to experience'),

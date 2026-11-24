@@ -843,12 +843,22 @@ main > section {
   background: var(--bar-strong);
   transform-origin: left center;
 }
-.bar[data-zero] {
-  min-width: 2px;
-  width: 2px;
-  background: var(--muted);
+.bar-rail {
+  flex: 1;
+  height: 14px;
+  border-radius: 0 4px 4px 0;
+  background: color-mix(in srgb, var(--line) 70%, transparent);
+}
+.bar-rail .bar {
+  height: 100%;
+}
+.bar-of {
+  color: var(--muted);
 }
 .bar-value {
+  min-width: 5ch;
+  text-align: right;
+  white-space: nowrap;
   font-family: var(--font-mono);
   font-size: 14px;
   font-variant-numeric: tabular-nums;

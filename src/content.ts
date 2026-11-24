@@ -111,37 +111,48 @@ export const credentials = [
 
 export type Detail = { heading: string; body: string }
 
-export const tracelens = {
-  name: 'TraceLens',
-  language: 'Java',
+export type ProofRow = { label: string; value: number; max: number }
+
+export const scoutflow = {
+  name: 'ScoutFlow',
+  language: 'Python',
   summary:
-    'A local lab that reproduces a cache stampede on a Spring Boot service, measures it, and proves the fix. Redis cache-aside in front of PostgreSQL, traced end to end with OpenTelemetry.',
+    'An agent that turns “best DDR5 deals under ₹50,000” into its own tool calls, typed product records and a recommendation grounded in scraped prices. Runs on a local model through Ollama, with Groq or Gemini as fallback.',
   proof: {
-    title: 'Product SQL reads per 32-request burst',
-    note: 'Every one of 5 cohorts per mode matched. One instance, one key, a synthetic 100 ms database delay. Without coalescing, up to 16 queries ran at once.',
+    title: 'Live model, cases passed per category',
     rows: [
-      { label: 'Warm cache', value: 0 },
-      { label: 'Cold key, no coalescing', value: 32 },
-      { label: 'Cold key, per-key coalescing', value: 1 },
-    ],
-    max: 32,
+      { label: 'Intent and constraints', value: 8, max: 8 },
+      { label: 'Ranking and value score', value: 6, max: 6 },
+      { label: 'Tool selection', value: 2, max: 6 },
+      { label: 'Edge cases', value: 1, max: 4 },
+      { label: 'Grounding in scraped prices', value: 1, max: 6 },
+    ] as ProofRow[],
     conclusion:
-      'Coalescing turned 32 duplicate database reads into one, inside one instance. It doesn’t claim anything across replicas.',
+      'The live agent reads intent and ranks products correctly every time, but quotes exact prices in only 1 of 6 grounding cases. Catching that gap is what the 30-case suite is for.',
+    note: '18 of 30 cases pass end to end with a live model. Offline, with recorded fixtures, all 30 pass, which checks the graders and ranking logic rather than the model.',
   },
-  stack: ['Java 25', 'Spring Boot', 'Redis', 'PostgreSQL', 'OpenTelemetry', 'Jaeger', 'Docker Compose'],
-  repo: 'https://github.com/iam-mkd/TraceLens',
+  stack: ['Python', 'FastAPI', 'LangChain', 'ChromaDB', 'Ollama', 'Groq', 'Pydantic'],
+  repo: 'https://github.com/iam-mkd/ScoutFlow',
+  evalLink: {
+    label: 'ScoutFlow evaluation suite on GitHub',
+    href: 'https://github.com/iam-mkd/ScoutFlow#-deterministic-golden-evaluation-suite',
+  },
   details: [
     {
-      heading: 'How the experiment runs',
-      body: '32 HTTP workers send one request each through a client barrier, against a fixed database pool of 16. Baseline, failure and mitigation modes rotate order across five cohorts, and every cohort is drained before the next one starts.',
+      heading: 'The agent picks its tools',
+      body: 'Given a task, it decides between search, product details, comparison, scraping and RAG search. Results are extracted into a validated Pydantic model instead of handing raw HTML to the model.',
     },
     {
-      heading: 'How coalescing works',
-      body: 'After a miss, requests join a per-key in-flight future. The leader rechecks Redis, queries PostgreSQL only if still missing, writes the cache and completes the future; followers share the result or the failure.',
+      heading: 'Value, not lowest price',
+      body: 'A deterministic score weighs speed, CAS latency, capacity, rating and review confidence against price per GB, so a cheap 8 GB stick never wins “best deal”. Desktop and laptop memory are told apart so recommendations always fit.',
     },
     {
-      heading: 'How failures surface',
-      body: 'Redis, decoding and database errors return a sanitized 503 problem response instead of silently falling back. Correlation IDs tie client samples to JSON logs and Jaeger traces.',
+      heading: 'What the 30 cases cover',
+      body: 'Intent and constraint extraction (8), tool selection and argument hygiene (6), ranking and value scoring (6), grounding against scraped prices (6), and edge cases like a ₹100 budget or conflicting constraints (4).',
+    },
+    {
+      heading: 'Staying up under rate limits',
+      body: 'Bounded retries and a model fallback handle 429 responses, and ingestion and question answering run as separate RAG pipelines over ChromaDB.',
     },
   ] as Detail[],
 }
@@ -216,29 +227,6 @@ export const moreProjects: MoreProject[] = [
     ],
   },
   {
-    slug: 'scoutflow',
-    name: 'ScoutFlow',
-    language: 'Python',
-    summary:
-      'An agent that turns “best DDR5 deals under ₹50,000” into tool calls, typed product records and a grounded recommendation, with a deterministic value score.',
-    stack: ['Python', 'FastAPI', 'LangChain', 'ChromaDB', 'Ollama', 'Groq', 'Pydantic'],
-    repo: 'https://github.com/iam-mkd/ScoutFlow',
-    details: [
-      {
-        heading: '30 / 30 offline evaluation cases',
-        body: 'Intent and constraint extraction (8), tool selection and argument hygiene (6), product ranking and value scoring (6), grounding against scraped prices (6), and edge cases like a ₹100 budget or conflicting constraints (4). With live models the same suite scores 18 / 30, which is why the offline grader exists.',
-      },
-      {
-        heading: 'Value, not lowest price',
-        body: 'A deterministic score weighs speed, CAS latency, capacity, rating and review confidence against price per GB, so a cheap 8 GB stick never wins “best deal”.',
-      },
-    ],
-    link: {
-      label: 'ScoutFlow evaluation suite on GitHub',
-      href: 'https://github.com/iam-mkd/ScoutFlow#-deterministic-golden-evaluation-suite',
-    },
-  },
-  {
     slug: 'log-analyser',
     name: 'Production Issue Analyser',
     language: 'Python',
@@ -294,10 +282,10 @@ export const updates: Update[] = [
     source: 'GitHub',
   },
   {
-    date: '2026-10-28',
-    title: 'TraceLens reproduces a cache stampede, then fixes it',
-    body: 'A cold key under a 32-request burst caused 32 database reads; per-key coalescing brought it to 1. Traces in Jaeger show the leader and its followers.',
-    url: 'https://github.com/iam-mkd/TraceLens',
+    date: '2026-10-14',
+    title: 'ScoutFlow gets a live-model benchmark',
+    body: 'Added bounded retries and a fallback for 429 rate limits, and ran the 30-case suite against a live model as well as mocks. Intent and ranking pass; grounding prices exactly is the open problem.',
+    url: 'https://github.com/iam-mkd/ScoutFlow',
     source: 'GitHub',
   },
 ]
