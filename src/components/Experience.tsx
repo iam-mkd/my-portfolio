@@ -1,7 +1,12 @@
-import { alsoOwned, caseStudies, credentials, role, skills } from '../content'
+import { alsoOwned, caseStudies, credentials, role, stats } from '../content'
+import { companyLogo, toolbox } from '../logos'
+import { ToolChip } from './Logo'
+import { useIcon } from '../useIcon'
+import { Stats } from './Stats'
 import { ArrowUpRight } from './icons'
 
 export function Experience() {
+  const tcs = useIcon(companyLogo)
   return (
     <section id="experience" className="section" aria-labelledby="exp-title">
       <header className="section-head">
@@ -9,7 +14,14 @@ export function Experience() {
         <p className="section-note">What I owned, the constraint, and what changed.</p>
       </header>
 
+      <Stats items={stats} />
+
       <div className="role-head">
+        <span className="company-logo" aria-hidden>
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" focusable="false">
+            {tcs && <path d={tcs.path} />}
+          </svg>
+        </span>
         <h3>
           {role.title}
           <span className="role-at"> at {role.company}</span>
@@ -82,15 +94,19 @@ export function Experience() {
         </div>
 
         <div>
-          <h3 className="sub-title">Skills</h3>
-          <dl className="skills">
-            {skills.map((g) => (
-              <div key={g.group} className="skill-row">
-                <dt>{g.group}</dt>
-                <dd>{g.items}</dd>
+          <h3 className="sub-title">Toolbox</h3>
+          <div className="toolbox">
+            {toolbox.map((g) => (
+              <div key={g.group} className="toolbox-group">
+                <h4 className="toolbox-title">{g.group}</h4>
+                <ul className="tool-chips">
+                  {g.items.map((t) => (
+                    <ToolChip key={t.name} tool={t} />
+                  ))}
+                </ul>
               </div>
             ))}
-          </dl>
+          </div>
         </div>
       </div>
     </section>

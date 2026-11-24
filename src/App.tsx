@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { LazyMotion, MotionConfig } from 'motion/react'
 import { Header } from './components/Header'
 import { TraceHero } from './components/TraceHero'
+import { LogoMarquee } from './components/LogoMarquee'
 import { Projects } from './components/Projects'
 import { Experience } from './components/Experience'
 import { Recently } from './components/Recently'
@@ -40,6 +41,7 @@ export default function App() {
         <main id="main" tabIndex={-1}>
           <span id="top" />
           <TraceHero />
+          <LogoMarquee />
           <Projects />
           <Experience />
           <Recently />

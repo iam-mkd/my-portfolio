@@ -46,6 +46,14 @@ export const role = {
     'Seven years delivering Java/Spring Boot and Python services for Citi’s fraud and dispute work, including services built from scratch.',
 }
 
+/** Résumé figures for the counters at the top of Experience. */
+export const stats = [
+  { value: 7, suffix: '+', label: 'years at TCS on Citi systems' },
+  { value: 21, label: 'Spring Boot microservices built and maintained' },
+  { value: 30, suffix: '+', label: 'production releases coordinated a year' },
+  { value: 13, label: 'engineers mentored as team lead' },
+]
+
 export const caseStudies: CaseStudy[] = [
   {
     title: 'Stopped a rules service from restarting in production',
@@ -82,20 +90,6 @@ export const alsoOwned: string[] = [
   'Hardened integrations with downstream banking systems (Apache Camel, CXF, Apigee) with retries, timeouts, circuit breakers and fallbacks, and Kafka events for async work.',
   'Mentored 13 engineers as team technical lead: reviewing and approving pull requests, setting coding standards, guiding implementation design and leading estimations in grooming.',
   'Brought AI coding assistants into daily engineering: GitHub Copilot and Devin for analysis, coding, debugging, code review and test generation, with every generated change reviewed against internal security policy.',
-]
-
-export const skills: { group: string; items: string }[] = [
-  { group: 'Languages', items: 'Java 11/17/21, Python, SQL' },
-  { group: 'Backend', items: 'Spring Boot, Spring Cloud, Spring Data JPA, Hibernate, REST, SOAP, microservices' },
-  { group: 'Integration', items: 'Apache Camel, CXF, Apigee, Apache Kafka' },
-  { group: 'Data', items: 'Oracle, PostgreSQL, MongoDB, Redis, query optimization' },
-  {
-    group: 'Reliability',
-    items: 'JVM and G1GC tuning, root cause analysis, circuit breakers, Splunk, Grafana, ELK, ServiceNow',
-  },
-  { group: 'Security and testing', items: 'Spring Security, OAuth2, JWT, mTLS, JUnit, Mockito, TDD, SonarQube, Snyk' },
-  { group: 'Delivery', items: 'Kubernetes, OpenShift, Docker, GCP, Jenkins, Tekton, Harness, Maven' },
-  { group: 'AI tooling', items: 'RAG, Qdrant, embeddings, LangGraph, LangChain, LLM evaluation, Claude Code, Copilot' },
 ]
 
 export const credentials = [

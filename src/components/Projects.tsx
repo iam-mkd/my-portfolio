@@ -2,6 +2,8 @@ import { useId, useState, type ReactNode } from 'react'
 import { AnimatePresence, m } from 'motion/react'
 import { moreProjects, profile, runweave, scoutflow, type Detail } from '../content'
 import { CopyButton } from './CopyButton'
+import { RunWeaveMedia } from './RunWeaveMedia'
+import { ShortenerDiagram } from './ShortenerDiagram'
 import { ArrowUpRight } from './icons'
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -158,6 +160,7 @@ export function Projects() {
             <Lang lang={runweave.language} />
           </div>
           <p className="feature-summary">{runweave.summary}</p>
+          <RunWeaveMedia />
           <RunReport />
           <p className="stack-line">{runweave.stack.join(', ')}</p>
           <div className="feature-foot">
@@ -198,6 +201,7 @@ export function Projects() {
               <Lang lang={p.language} />
             </div>
             <p className="more-summary">{p.summary}</p>
+            {p.slug === 'url-shortener' && <ShortenerDiagram />}
             <div className="more-links">
               <SourceLink href={p.repo} name={p.name} />
               {p.link && (

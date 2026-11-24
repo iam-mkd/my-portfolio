@@ -37,6 +37,32 @@ function useActiveSection() {
   return active
 }
 
+/** Thin reading-progress line along the bottom of the header. */
+function ScrollProgress() {
+  const ref = useRef<HTMLSpanElement>(null)
+  useEffect(() => {
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      const p = max > 0 ? Math.min(1, window.scrollY / max) : 0
+      if (ref.current) ref.current.style.transform = `scaleX(${p})`
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [])
+  return <span ref={ref} className="scroll-progress" aria-hidden />
+}
+
 function MobileMenu() {
   const [open, setOpen] = useState(false)
   const id = useId()
@@ -128,6 +154,7 @@ export function Header({
 
   return (
     <header className="site-header">
+      <ScrollProgress />
       <div className="site-header-inner">
         <a href="#top" className="mark" aria-label={`${profile.name}, back to top`}>
           <span className="mark-glyph" aria-hidden>
