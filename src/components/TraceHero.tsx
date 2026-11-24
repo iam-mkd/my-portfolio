@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, m, useReducedMotion } from 'motion/react'
 import { spans, TRACE_TOTAL, type Span } from '../trace'
 import { profile } from '../content'
+import { onSectionLink } from '../navigate'
+import { ArrowUpRight } from './icons'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 /** Real milliseconds of animation per trace millisecond. */
@@ -35,13 +37,13 @@ function TraceRow({
         onFocus={() => onSelect(span.id)}
         onClick={() => onSelect(span.id)}
       >
-        <span className="trace-name" style={{ paddingLeft: `${span.depth * 14}px` }}>
+        <span className="trace-name" style={{ paddingLeft: `calc(${span.depth} * var(--indent))` }}>
           {span.depth > 0 && <span className="trace-elbow" aria-hidden />}
           <span className="trace-service">{span.service}</span>
           <span className="trace-op">{span.name}</span>
         </span>
         <span className="trace-track" aria-hidden>
-          <motion.span
+          <m.span
             key={`bar-${run}`}
             className="trace-bar"
             data-status={span.status}
@@ -51,15 +53,15 @@ function TraceRow({
             transition={{ delay, duration, ease: EASE }}
           />
         </span>
-        <motion.span
+        <m.span
           key={`ms-${run}`}
           className="trace-ms"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: delay + duration * 0.8, duration: 0.3 }}
+          transition={{ delay: delay + duration * 0.8, duration: reduce ? 0 : 0.3 }}
         >
           {span.duration} ms
-        </motion.span>
+        </m.span>
       </button>
     </li>
   )
@@ -68,74 +70,81 @@ function TraceRow({
 export function TraceHero() {
   const [selected, setSelected] = useState('root')
   const [run, setRun] = useState(0)
+  const reduce = useReducedMotion()
   const span = spans.find((s) => s.id === selected) ?? spans[0]
   const ticks = [0, 60, 120, 180, 240]
 
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero-copy">
-        <motion.h1
-          id="hero-title"
-          className="hero-title"
-          initial={{ opacity: 0, y: 12, filter: 'blur(6px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: 0.8, ease: EASE }}
-        >
+        <h1 id="hero-title" className="hero-title enter">
           {profile.name}
-        </motion.h1>
-        <motion.p
-          className="hero-intro"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.15, ease: EASE }}
-        >
-          {profile.intro}
-        </motion.p>
-        <motion.div
-          className="hero-meta"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.25 }}
-        >
-          <span>
-            {profile.role} at {profile.company}
-          </span>
-          <span>{profile.location}</span>
-          {profile.openToWork && (
+        </h1>
+        <p className="hero-intro enter enter-2">{profile.intro}</p>
+        <div className="enter enter-3">
+          <p className="hero-meta">
+            <span>
+              {profile.role}, {profile.years}
+            </span>
+            <span>{profile.location}</span>
             <span className="status-pill">
               <span className="status-dot" aria-hidden />
-              Open to backend and platform roles
-            </span>
-          )}
-        </motion.div>
-      </div>
-
-      <div className="trace" role="group" aria-label="My stack, drawn as a request trace">
-        <div className="trace-head">
-          <p className="trace-title">
-            <span className="trace-id">trace 4f1c…a29e</span>
-            <span className="trace-sub">
-              {spans.length} spans, {TRACE_TOTAL} ms. Hover or tab through a span to read it.
+              {profile.availability}
             </span>
           </p>
-          <button type="button" className="ghost-btn" onClick={() => setRun((r) => r + 1)}>
+          <div className="hero-actions">
+            <a className="btn btn--primary" href={profile.resume} target="_blank" rel="noreferrer">
+              View résumé
+              <span className="btn-sub">PDF</span>
+            </a>
+            <a className="btn" href="#work" onClick={(e) => onSectionLink(e, 'work')}>
+              View selected work
+            </a>
+            <a className="btn btn--quiet" href={profile.linkedin} target="_blank" rel="noreferrer">
+              LinkedIn
+              <ArrowUpRight />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <figure className="trace" aria-labelledby="trace-label">
+        <figcaption className="trace-head">
+          <span className="trace-title">
+            <span id="trace-label" className="trace-label">
+              Illustrative request trace
+            </span>
+            <span className="trace-sub">
+              <span className="only-wide">
+                My stack drawn as one request; timings are examples. Hover, tap or focus a span for details.
+              </span>
+              <span className="only-narrow">Timings are examples. Tap a span for details.</span>
+            </span>
+          </span>
+          <button
+            type="button"
+            className="ghost-btn"
+            onClick={() => setRun((r) => r + 1)}
+            hidden={reduce ?? false}
+            aria-label="Replay the trace animation"
+          >
             Replay
           </button>
-        </div>
+        </figcaption>
 
         <div className="trace-ruler" aria-hidden>
           <span />
           <span className="trace-ticks">
             {ticks.map((t) => (
               <span key={t} style={{ left: `${(t / TRACE_TOTAL) * 100}%` }}>
-                {t}
+                {t} ms
               </span>
             ))}
           </span>
           <span />
         </div>
 
-        <ol className="trace-rows">
+        <ol className="trace-rows" aria-label="Spans">
           {spans.map((s) => (
             <TraceRow key={s.id} span={s} run={run} active={s.id === selected} onSelect={setSelected} />
           ))}
@@ -143,12 +152,12 @@ export function TraceHero() {
 
         <div className="trace-attrs" aria-live="polite">
           <AnimatePresence mode="wait" initial={false}>
-            <motion.dl
+            <m.dl
               key={span.id}
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.18, ease: EASE }}
+              transition={{ duration: 0.16, ease: EASE }}
             >
               {span.attrs.map(([k, v]) => (
                 <div key={k} className="attr">
@@ -156,10 +165,10 @@ export function TraceHero() {
                   <dd data-warn={k.startsWith('fault') || undefined}>{v}</dd>
                 </div>
               ))}
-            </motion.dl>
+            </m.dl>
           </AnimatePresence>
         </div>
-      </div>
+      </figure>
     </section>
   )
 }

@@ -4,16 +4,17 @@ import { ArrowUpRight } from './icons'
 
 export function Contact() {
   const links = [
-    { label: 'GitHub', href: profile.github },
+    { label: 'Résumé (PDF)', href: profile.resume },
     { label: 'LinkedIn', href: profile.linkedin },
-    { label: 'Resume (PDF)', href: profile.resume },
-  ].filter((l) => l.href)
+    { label: 'GitHub', href: profile.github },
+  ]
 
   return (
     <section id="contact" className="section contact" aria-labelledby="contact-title">
       <h2 id="contact-title" className="contact-title">
         Have a system that needs to stay up? Let’s talk.
       </h2>
+      <p className="contact-roles">{profile.rolesSought}</p>
       <div className="contact-row">
         <a className="contact-email" href={`mailto:${profile.email}`}>
           {profile.email}

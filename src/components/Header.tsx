@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
-import { motion } from 'motion/react'
+import { useEffect, useId, useRef, useState } from 'react'
+import { AnimatePresence, m } from 'motion/react'
 import { profile } from '../content'
+import { onSectionLink } from '../navigate'
 import { Moon, Sun } from './icons'
 
 const NAV = [
@@ -9,6 +10,8 @@ const NAV = [
   { id: 'recently', label: 'Recently' },
   { id: 'contact', label: 'Contact' },
 ]
+
+const EASE = [0.22, 1, 0.36, 1] as const
 
 function useActiveSection() {
   const [active, setActive] = useState<string | null>(null)
@@ -32,6 +35,83 @@ function useActiveSection() {
     }
   }, [])
   return active
+}
+
+function MobileMenu() {
+  const [open, setOpen] = useState(false)
+  const id = useId()
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    panelRef.current?.querySelector<HTMLElement>('a')?.focus()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        btnRef.current?.focus()
+      }
+    }
+    const onDown = (e: PointerEvent) => {
+      const t = e.target as Node
+      if (!panelRef.current?.contains(t) && !btnRef.current?.contains(t)) setOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    document.addEventListener('pointerdown', onDown)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.removeEventListener('pointerdown', onDown)
+    }
+  }, [open])
+
+  return (
+    <div className="mobile-menu">
+      <button
+        ref={btnRef}
+        type="button"
+        className="menu-btn"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <span className="menu-icon" data-open={open || undefined} aria-hidden>
+          <span />
+          <span />
+        </span>
+        {open ? 'Close' : 'Menu'}
+      </button>
+      <AnimatePresence>
+        {open && (
+          <m.div
+            ref={panelRef}
+            id={id}
+            className="menu-panel"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.22, ease: EASE }}
+          >
+            <nav aria-label="Sections">
+              <ul>
+                {NAV.map((n) => (
+                  <li key={n.id}>
+                    <a href={`#${n.id}`} onClick={(e) => onSectionLink(e, n.id, () => setOpen(false))}>
+                      {n.label}
+                    </a>
+                  </li>
+                ))}
+                <li className="menu-sep">
+                  <a href={profile.resume} target="_blank" rel="noreferrer" onClick={() => setOpen(false)}>
+                    Résumé (PDF)
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </m.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
 }
 
 export function Header({
@@ -58,9 +138,15 @@ export function Header({
 
         <nav aria-label="Sections" className="nav">
           {NAV.map((n) => (
-            <a key={n.id} href={`#${n.id}`} className="nav-link" aria-current={active === n.id ? 'true' : undefined}>
+            <a
+              key={n.id}
+              href={`#${n.id}`}
+              className="nav-link"
+              aria-current={active === n.id ? 'true' : undefined}
+              onClick={(e) => onSectionLink(e, n.id)}
+            >
               {active === n.id && (
-                <motion.span
+                <m.span
                   layoutId="nav-pill"
                   className="nav-pill"
                   transition={{ type: 'spring', stiffness: 500, damping: 40 }}
@@ -72,25 +158,35 @@ export function Header({
         </nav>
 
         <div className="header-actions">
-          <button type="button" className="kbd-btn" onClick={onOpenPalette} aria-label="Open command menu">
+          <a className="header-resume" href={profile.resume} target="_blank" rel="noreferrer">
+            Résumé
+          </a>
+          <button
+            type="button"
+            className="kbd-btn"
+            onClick={onOpenPalette}
+            aria-label="Open command menu"
+            title="Command menu"
+          >
             <kbd>{isMac ? '⌘' : 'Ctrl'}</kbd>
             <kbd>K</kbd>
           </button>
+          <MobileMenu />
           <button
             type="button"
             className="icon-btn"
             onClick={onToggleTheme}
             aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
           >
-            <motion.span
+            <m.span
               key={theme}
               initial={{ rotate: -90, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.3, ease: EASE }}
               style={{ display: 'inline-flex' }}
             >
               {theme === 'dark' ? <Sun /> : <Moon />}
-            </motion.span>
+            </m.span>
           </button>
         </div>
       </div>

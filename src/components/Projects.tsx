@@ -1,115 +1,227 @@
-import { useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
-import { projects, profile } from '../content'
+import { useId, useState, type ReactNode } from 'react'
+import { AnimatePresence, m } from 'motion/react'
+import { moreProjects, profile, runweave, tracelens, type Detail } from '../content'
 import { CopyButton } from './CopyButton'
 import { ArrowUpRight } from './icons'
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
-export function Projects() {
-  const [open, setOpen] = useState<string | null>(projects[0].slug)
+function Disclosure({ label, children }: { label: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false)
+  const id = useId()
+  return (
+    <div className="disclosure" data-open={open || undefined}>
+      <button
+        type="button"
+        className="disclosure-btn"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen(!open)}
+      >
+        <m.span
+          className="disclosure-icon"
+          aria-hidden
+          animate={{ rotate: open ? 45 : 0 }}
+          transition={{ duration: 0.25, ease: EASE }}
+        >
+          +
+        </m.span>
+        {label}
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <m.div
+            id={id}
+            className="disclosure-panel"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.35, ease: EASE }}
+          >
+            <div className="disclosure-inner">{children}</div>
+          </m.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
 
+function Details({ items }: { items: Detail[] }) {
+  return (
+    <dl className="details">
+      {items.map((d) => (
+        <div key={d.heading}>
+          <dt>{d.heading}</dt>
+          <dd>{d.body}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
+function SourceLink({ href, name }: { href: string; name: string }) {
+  return (
+    <a className="text-link" href={href} target="_blank" rel="noreferrer">
+      {name} source on GitHub
+      <ArrowUpRight />
+    </a>
+  )
+}
+
+function Lang({ lang }: { lang: string }) {
+  return (
+    <span className="project-lang" data-lang={lang}>
+      {lang}
+    </span>
+  )
+}
+
+function StampedeChart() {
+  const p = tracelens.proof
+  return (
+    <figure className="proof">
+      <figcaption className="proof-title">{p.title}</figcaption>
+      <table className="bars">
+        <thead className="sr-only">
+          <tr>
+            <th scope="col">Condition</th>
+            <th scope="col">SQL reads</th>
+          </tr>
+        </thead>
+        <tbody>
+          {p.rows.map((r) => (
+            <tr key={r.label}>
+              <th scope="row">{r.label}</th>
+              <td>
+                <span className="bar-track">
+                  <m.span
+                    className="bar"
+                    data-zero={r.value === 0 || undefined}
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ duration: 0.7, ease: EASE }}
+                    style={{ width: `${Math.max((r.value / p.max) * 100, 0)}%` }}
+                  />
+                  <span className="bar-value">{r.value}</span>
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="proof-conclusion">{p.conclusion}</p>
+      <p className="proof-note">{p.note}</p>
+    </figure>
+  )
+}
+
+function RunReport() {
+  const r = runweave.report
+  return (
+    <figure className="proof">
+      <figcaption className="proof-title">{r.caption}</figcaption>
+      <pre className="report" tabIndex={0} aria-label="Example RunWeave terminal output">
+        <code>
+          {r.lines.map((l) => (
+            <span key={l.text} className="report-line" data-tone={l.tone}>
+              {l.text}
+            </span>
+          ))}
+        </code>
+      </pre>
+      <p className="proof-conclusion">{r.note}</p>
+      <div className="install">
+        <code>{runweave.install}</code>
+        <CopyButton text={runweave.install} label="Copy install command" />
+      </div>
+    </figure>
+  )
+}
+
+export function Projects() {
   return (
     <section id="work" className="section" aria-labelledby="work-title">
       <header className="section-head">
         <h2 id="work-title">Selected work</h2>
-        <p className="section-note">{projects.length} open-source projects. Select one to see how it works.</p>
+        <p className="section-note">Open source. Each shows the result first; details are folded away.</p>
       </header>
 
-      <ul className="projects">
-        {projects.map((p) => {
-          const isOpen = open === p.slug
-          const panelId = `project-${p.slug}`
-          return (
-            <li key={p.slug} className="project" data-open={isOpen || undefined}>
-              <button
-                type="button"
-                className="project-toggle"
-                aria-expanded={isOpen}
-                aria-controls={panelId}
-                onClick={() => setOpen(isOpen ? null : p.slug)}
-              >
-                <span className="project-name">{p.name}</span>
-                <span className="project-summary">{p.summary}</span>
-                <span className="project-lang" data-lang={p.language}>
-                  {p.language}
-                </span>
-                <motion.span
-                  className="project-chevron"
-                  aria-hidden
-                  animate={{ rotate: isOpen ? 45 : 0 }}
-                  transition={{ duration: 0.25, ease: EASE }}
-                >
-                  +
-                </motion.span>
-              </button>
+      <div className="featured">
+        <article className="feature" aria-labelledby="p-tracelens">
+          <div className="feature-head">
+            <h3 id="p-tracelens">{tracelens.name}</h3>
+            <Lang lang={tracelens.language} />
+          </div>
+          <p className="feature-summary">{tracelens.summary}</p>
+          <StampedeChart />
+          <p className="stack-line">{tracelens.stack.join(', ')}</p>
+          <div className="feature-foot">
+            <SourceLink href={tracelens.repo} name={tracelens.name} />
+          </div>
+          <Disclosure label="How TraceLens works">
+            <Details items={tracelens.details} />
+          </Disclosure>
+        </article>
 
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    id={panelId}
-                    className="project-panel"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.4, ease: EASE }}
-                  >
-                    <div className="project-body">
-                      <div className="project-text">
-                        {p.detail.map((d) => (
-                          <p key={d}>{d}</p>
-                        ))}
-                        <ul className="tags" aria-label="Stack">
-                          {p.stack.map((s) => (
-                            <li key={s}>{s}</li>
-                          ))}
-                        </ul>
-                      </div>
+        <article className="feature" aria-labelledby="p-runweave">
+          <div className="feature-head">
+            <h3 id="p-runweave">{runweave.name}</h3>
+            <Lang lang={runweave.language} />
+          </div>
+          <p className="feature-summary">{runweave.summary}</p>
+          <RunReport />
+          <p className="stack-line">{runweave.stack.join(', ')}</p>
+          <div className="feature-foot">
+            <SourceLink href={runweave.repo} name={runweave.name} />
+          </div>
+          <Disclosure label="How RunWeave works">
+            <Details items={runweave.details} />
+          </Disclosure>
+        </article>
+      </div>
 
-                      <aside className="project-side">
-                        <dl className="facts">
-                          {p.facts.map((f) => (
-                            <div key={f.label}>
-                              <dt>{f.label}</dt>
-                              <dd>{f.value}</dd>
-                            </div>
-                          ))}
-                        </dl>
-
-                        {p.command && (
-                          <div className="terminal">
-                            <div className="terminal-bar">
-                              <span>{p.command.label}</span>
-                              <CopyButton text={p.command.lines.join('\n')} label="Copy commands" />
-                            </div>
-                            <pre>
-                              <code>
-                                {p.command.lines.map((l) => (
-                                  <span key={l} className="terminal-line">
-                                    {l}
-                                  </span>
-                                ))}
-                              </code>
-                            </pre>
-                          </div>
-                        )}
-
-                        <a className="text-link" href={p.repo} target="_blank" rel="noreferrer">
-                          View source on GitHub
-                          <ArrowUpRight />
-                        </a>
-                      </aside>
+      <h3 className="more-title">More projects</h3>
+      <ul className="more">
+        {moreProjects.map((p) => (
+          <li key={p.slug} className="more-item">
+            <div className="more-head">
+              <h4>{p.name}</h4>
+              <Lang lang={p.language} />
+            </div>
+            <p className="more-summary">{p.summary}</p>
+            <div className="more-links">
+              <SourceLink href={p.repo} name={p.name} />
+              {p.link && (
+                <a className="text-link" href={p.link.href} target="_blank" rel="noreferrer">
+                  {p.link.label}
+                  <ArrowUpRight />
+                </a>
+              )}
+            </div>
+            <Disclosure label={`${p.name} details`}>
+              <Details items={p.details} />
+              {p.example && (
+                <div className="examples">
+                  {p.example.map((ex) => (
+                    <div key={ex.label} className="example">
+                      <p className="example-label">{ex.label}</p>
+                      <pre tabIndex={0} aria-label={`${p.name} example ${ex.label.toLowerCase()}`}>
+                        <code>{ex.code}</code>
+                      </pre>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </li>
-          )
-        })}
+                  ))}
+                  <p className="proof-note">Synthetic example from the project README.</p>
+                </div>
+              )}
+              <p className="stack-line">{p.stack.join(', ')}</p>
+            </Disclosure>
+          </li>
+        ))}
       </ul>
 
       <p className="section-foot">
-        More experiments, including Java Streams practice, live on{' '}
+        Everything else, including Java Streams practice, is on{' '}
         <a className="text-link" href={profile.github} target="_blank" rel="noreferrer">
           github.com/{profile.githubUser}
         </a>

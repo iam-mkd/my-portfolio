@@ -1,55 +1,97 @@
-import { experience, profile, skills } from '../content'
+import { alsoOwned, caseStudies, credentials, role, skills } from '../content'
+import { ArrowUpRight } from './icons'
 
 export function Experience() {
   return (
     <section id="experience" className="section" aria-labelledby="exp-title">
       <header className="section-head">
         <h2 id="exp-title">Experience</h2>
-        <p className="section-note">Where I work, and what I reach for.</p>
+        <p className="section-note">What I owned, the constraint, and what changed.</p>
       </header>
 
-      <div className="exp-grid">
-        <div className="exp-roles">
-          {experience.map((r) => (
-            <article key={r.company + r.title} className="role">
-              <div className="role-head">
-                <h3>
-                  {r.title}
-                  <span className="role-at"> at {r.company}</span>
-                </h3>
-                <p className="role-meta">
-                  <span>{r.period}</span>
-                  <span>{r.location}</span>
-                </p>
-              </div>
-              <ul className="role-points">
-                {r.points.map((pt) => (
-                  <li key={pt}>{pt}</li>
-                ))}
-              </ul>
-              <ul className="tags" aria-label="Stack">
-                {r.stack.map((s) => (
-                  <li key={s}>{s}</li>
-                ))}
-              </ul>
-            </article>
-          ))}
+      <div className="role-head">
+        <h3>
+          {role.title}
+          <span className="role-at"> at {role.company}</span>
+        </h3>
+        <p className="role-meta">
+          <time dateTime={role.start}>{role.period}</time>
+          <span>{role.location}</span>
+        </p>
+      </div>
+      <p className="role-client">Client: {role.client}</p>
+      <p className="role-summary">{role.summary}</p>
 
-          <div className="about">
-            {profile.about.map((a) => (
-              <p key={a}>{a}</p>
+      <ol className="cases" aria-label="Work I owned">
+        {caseStudies.map((c) => (
+          <li key={c.title} className="case">
+            <div className="case-metric">
+              <span className="case-value">{c.metric.value}</span>
+              <span className="case-label">{c.metric.label}</span>
+            </div>
+            <div className="case-body">
+              <h4>{c.title}</h4>
+              <dl className="case-facts">
+                <div>
+                  <dt>System</dt>
+                  <dd>{c.system}</dd>
+                </div>
+                <div>
+                  <dt>Constraint</dt>
+                  <dd>{c.constraint}</dd>
+                </div>
+                <div>
+                  <dt>What I changed</dt>
+                  <dd>{c.change}</dd>
+                </div>
+                <div>
+                  <dt>Result</dt>
+                  <dd>{c.result}</dd>
+                </div>
+              </dl>
+            </div>
+          </li>
+        ))}
+      </ol>
+
+      <div className="exp-grid">
+        <div>
+          <h3 className="sub-title">Also at TCS</h3>
+          <ul className="role-points">
+            {alsoOwned.map((pt) => (
+              <li key={pt}>{pt}</li>
             ))}
-          </div>
+          </ul>
+
+          <h3 className="sub-title">Education and credentials</h3>
+          <ul className="creds">
+            {credentials.map((c) => (
+              <li key={c.label}>
+                {c.url ? (
+                  <a className="text-link" href={c.url} target="_blank" rel="noreferrer">
+                    {c.label}
+                    <ArrowUpRight />
+                  </a>
+                ) : (
+                  <span className="cred-label">{c.label}</span>
+                )}
+                <span className="cred-detail">{c.detail}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <dl className="skills">
-          {skills.map((g) => (
-            <div key={g.group} className="skill-row">
-              <dt>{g.group}</dt>
-              <dd>{g.items.join(', ')}</dd>
-            </div>
-          ))}
-        </dl>
+        <div>
+          <h3 className="sub-title">Skills</h3>
+          <dl className="skills">
+            {skills.map((g) => (
+              <div key={g.group} className="skill-row">
+                <dt>{g.group}</dt>
+                <dd>{g.items}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
       </div>
     </section>
   )

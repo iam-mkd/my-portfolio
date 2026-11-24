@@ -1,20 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
-import { profile, projects } from '../content'
+import { AnimatePresence, m } from 'motion/react'
+import { moreProjects, profile, runweave, tracelens } from '../content'
+import { goToSection } from '../navigate'
 import { copyText } from '../clipboard'
 import { Search } from './icons'
 
-type Command = { id: string; label: string; hint: string; run: () => void }
-
-function scrollToId(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-}
+type Command = { id: string; label: string; hint: string; run: () => void; nav?: boolean }
 
 type Props = { onClose: () => void; onToggleTheme: () => void; theme: string }
 
 export function CommandPalette({ open, ...props }: Props & { open: boolean }) {
   return <AnimatePresence>{open && <PaletteBody key="palette" {...props} />}</AnimatePresence>
 }
+
+const openTab = (href: string) => window.open(href, '_blank', 'noopener')
 
 function PaletteBody({ onClose, onToggleTheme, theme }: Props) {
   const [query, setQuery] = useState('')
@@ -24,23 +23,28 @@ function PaletteBody({ onClose, onToggleTheme, theme }: Props) {
   const returnFocus = useRef<HTMLElement | null>(null)
 
   const commands = useMemo<Command[]>(() => {
-    const list: Command[] = [
-      { id: 'work', label: 'Go to selected work', hint: 'Section', run: () => scrollToId('work') },
-      { id: 'exp', label: 'Go to experience', hint: 'Section', run: () => scrollToId('experience') },
-      { id: 'recent', label: 'Go to recent activity', hint: 'Section', run: () => scrollToId('recently') },
-      { id: 'contact', label: 'Go to contact', hint: 'Section', run: () => scrollToId('contact') },
+    const section = (id: string, label: string): Command => ({
+      id: `go-${id}`,
+      label,
+      hint: 'Section',
+      nav: true,
+      run: () => goToSection(id),
+    })
+    const projects = [tracelens, runweave, ...moreProjects]
+    return [
+      section('work', 'Go to selected work'),
+      section('experience', 'Go to experience'),
+      section('recently', 'Go to recent updates'),
+      section('contact', 'Go to contact'),
+      { id: 'cv', label: 'View résumé', hint: 'PDF', run: () => openTab(profile.resume) },
       {
         id: 'email',
         label: 'Copy email address',
         hint: profile.email,
         run: () => void copyText(profile.email).then((ok) => ok && setFlash('Email copied')),
       },
-      {
-        id: 'gh',
-        label: 'Open GitHub profile',
-        hint: 'github.com',
-        run: () => window.open(profile.github, '_blank', 'noopener'),
-      },
+      { id: 'li', label: 'Open LinkedIn profile', hint: 'linkedin.com', run: () => openTab(profile.linkedin) },
+      { id: 'gh', label: 'Open GitHub profile', hint: 'github.com', run: () => openTab(profile.github) },
       {
         id: 'theme',
         label: `Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`,
@@ -48,27 +52,12 @@ function PaletteBody({ onClose, onToggleTheme, theme }: Props) {
         run: onToggleTheme,
       },
       ...projects.map((p) => ({
-        id: `p-${p.slug}`,
-        label: `Open ${p.name} on GitHub`,
+        id: `p-${p.name}`,
+        label: `Open ${p.name} source on GitHub`,
         hint: 'Project',
-        run: () => window.open(p.repo, '_blank', 'noopener'),
+        run: () => openTab(p.repo),
       })),
     ]
-    if (profile.linkedin)
-      list.splice(6, 0, {
-        id: 'li',
-        label: 'Open LinkedIn profile',
-        hint: 'linkedin.com',
-        run: () => window.open(profile.linkedin, '_blank', 'noopener'),
-      })
-    if (profile.resume)
-      list.splice(6, 0, {
-        id: 'cv',
-        label: 'Download resume',
-        hint: 'PDF',
-        run: () => window.open(profile.resume, '_blank', 'noopener'),
-      })
-    return list
   }, [theme, onToggleTheme])
 
   const results = useMemo(() => {
@@ -82,13 +71,15 @@ function PaletteBody({ onClose, onToggleTheme, theme }: Props) {
     const raf = requestAnimationFrame(() => inputRef.current?.focus())
     return () => {
       cancelAnimationFrame(raf)
-      returnFocus.current?.focus?.({ preventScroll: true })
+      if (returnFocus.current) returnFocus.current.focus({ preventScroll: true })
     }
   }, [])
 
   const runAt = (i: number) => {
     const cmd = results[i]
     if (!cmd) return
+    // A section jump moves focus to its heading; don't pull it back on close.
+    if (cmd.nav) returnFocus.current = null
     cmd.run()
     if (cmd.id === 'email') {
       window.setTimeout(onClose, 700)
@@ -116,7 +107,7 @@ function PaletteBody({ onClose, onToggleTheme, theme }: Props) {
   }
 
   return (
-    <motion.div
+    <m.div
       className="palette-backdrop"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -124,7 +115,7 @@ function PaletteBody({ onClose, onToggleTheme, theme }: Props) {
       transition={{ duration: 0.15 }}
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
-      <motion.div
+      <m.div
         className="palette"
         role="dialog"
         aria-modal="true"
@@ -149,7 +140,7 @@ function PaletteBody({ onClose, onToggleTheme, theme }: Props) {
             role="combobox"
             aria-expanded="true"
             aria-controls="palette-list"
-            aria-activedescendant={results[index] ? `cmd-${results[index].id}` : undefined}
+            aria-activedescendant={results[index] ? `cmd-${results[index].id.replace(/\W/g, '')}` : undefined}
             autoComplete="off"
             spellCheck={false}
           />
@@ -159,7 +150,7 @@ function PaletteBody({ onClose, onToggleTheme, theme }: Props) {
           {results.map((c, i) => (
             <li
               key={c.id}
-              id={`cmd-${c.id}`}
+              id={`cmd-${c.id.replace(/\W/g, '')}`}
               role="option"
               aria-selected={i === index}
               className="palette-item"
@@ -167,7 +158,7 @@ function PaletteBody({ onClose, onToggleTheme, theme }: Props) {
               onClick={() => runAt(i)}
             >
               {i === index && (
-                <motion.span
+                <m.span
                   layoutId="palette-highlight"
                   className="palette-highlight"
                   transition={{ type: 'spring', stiffness: 700, damping: 45 }}
@@ -193,7 +184,7 @@ function PaletteBody({ onClose, onToggleTheme, theme }: Props) {
             </>
           )}
         </div>
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   )
 }

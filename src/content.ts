@@ -1,189 +1,300 @@
 /**
  * Every piece of personal content on the site lives in this file.
  * Edit here; components only render what is below.
- *
- * Fields marked `TODO(you)` are things I could not find publicly
- * (LinkedIn URL, resume PDF, posts, exact dates). Empty values are
- * hidden on the site, so nothing broken shows while they are blank.
+ * Source: Resume_Mrinmoy_Kumar_Das.pdf and the project repositories on GitHub.
  */
 
 export const profile = {
   name: 'Mrinmoy Kumar Das',
   shortName: 'Mrinmoy',
-  role: 'Java developer',
-  company: 'Tata Consultancy Services',
+  role: 'Senior Software Engineer',
+  company: 'TCS',
+  companyFull: 'Tata Consultancy Services',
+  years: '7+ years',
   location: 'Chennai, India',
   intro:
-    'I build backend systems, APIs and integrations in Java, and the tooling that shows you exactly where they break.',
-  about: [
-    'Day to day I work with Spring Boot, Java 21 and Apache Camel, wiring services together and keeping integrations dependable on OpenShift and Kubernetes.',
-    'Outside work I build reliability labs and test harnesses: tools that reproduce failures on purpose, trace them, and turn the result into something a pull request can be gated on.',
-  ],
+    'Java backend developer at TCS. I build Spring Boot APIs and Apache Camel integrations, and open-source tools for testing how systems fail.',
+  availability: 'Open to senior backend roles',
+  rolesSought:
+    'I’m looking for senior backend or platform engineering roles: Java and Spring Boot services, integrations, and the reliability work around them. Based in Chennai, open to remote.',
   email: 'mrinmoy03das@gmail.com',
   github: 'https://github.com/iam-mkd',
   githubUser: 'iam-mkd',
-  /** TODO(you): paste your LinkedIn profile URL, e.g. https://www.linkedin.com/in/your-handle */
-  linkedin: '',
-  /** TODO(you): drop resume.pdf into /public and set this to '/resume.pdf' */
-  resume: '',
-  openToWork: true,
+  linkedin: 'https://www.linkedin.com/in/mrinmoy-kumar-das-749a32121',
+  resume: '/Mrinmoy-Kumar-Das-Resume.pdf',
 }
 
-export type Project = {
-  slug: string
-  name: string
-  summary: string
-  detail: string[]
-  stack: string[]
-  repo: string
-  language: 'Java' | 'Python'
-  command?: { label: string; lines: string[] }
-  facts: { label: string; value: string }[]
+/* ───────────────────────── Experience ───────────────────────── */
+
+export type CaseStudy = {
+  title: string
+  metric: { value: string; label: string }
+  system: string
+  constraint: string
+  change: string
+  result: string
 }
 
-export const projects: Project[] = [
+export const role = {
+  company: 'Tata Consultancy Services',
+  title: 'Senior Engineer (IT Analyst)',
+  period: 'Jun 2019 – present',
+  start: '2019-06',
+  client: 'Citigroup, US Credit Retail Services',
+  location: 'Chennai',
+  summary:
+    'Seven years building Java and Spring Boot payment, fraud and dispute services for Citi, including services built from scratch.',
+}
+
+export const caseStudies: CaseStudy[] = [
   {
-    slug: 'runweave',
-    name: 'RunWeave',
-    summary:
-      'Test AI agents like the rest of your code: evals, load tests, injected provider faults and version comparisons. Local, offline, no API key.',
-    detail: [
-      'Agents are easy to demo and hard to trust. RunWeave runs a dataset of cases with assertions on output, schema, tools called, latency and cost, and fails CI when a pass-rate gate drops.',
-      'It load-tests agents with concurrency sweeps (p50, p95, p99, queue wait, event-loop lag), injects seeded provider faults like rate limits, 5xx and cut-off streams, and compares two versions case by case before you switch.',
-      'Works with any Python function, any HTTP agent, the OpenAI Agents SDK, Claude Agent SDK and LangGraph. An LLM proxy replays fixtures so tests are free and deterministic.',
-    ],
-    stack: ['Python', 'FastAPI', 'asyncio', 'TypeScript', 'PostgreSQL', 'LangGraph'],
-    repo: 'https://github.com/iam-mkd/RunWeave',
-    language: 'Python',
-    command: {
-      label: 'Try it',
-      lines: ['uv tool install runweave', 'runweave init my-agent', 'cd my-agent && runweave eval'],
-    },
-    facts: [
-      { label: 'License', value: 'Apache-2.0' },
-      { label: 'Runs on', value: '127.0.0.1, offline' },
-      { label: 'CI output', value: 'JUnit, JSON, Markdown' },
-    ],
+    title: 'Stopped a rules service from restarting in production',
+    metric: { value: '48.7%', label: 'less memory, 0 forced restarts' },
+    system: 'A production Drools rules service.',
+    constraint: 'Metaspace exhaustion forced about 3 production restarts a month.',
+    change:
+      'Restructured the rules hierarchically, removed redundant rule evaluations, fixed fact lifecycle management and tuned G1GC.',
+    result: 'Memory use dropped 48.7% and the recurring restarts stopped.',
   },
   {
-    slug: 'tracelens',
-    name: 'TraceLens',
-    summary:
-      'A local-first distributed-systems reliability lab for reproducing failures, observing their effects and checking resilience mechanisms.',
-    detail: [
-      'A Spring Boot service with a Redis cache-aside product endpoint backed by PostgreSQL, and an opt-in lab that reproduces a cache stampede under controlled bursts.',
-      'Every request carries a correlation ID into structured JSON logs; OpenTelemetry traces land in Jaeger, and Micrometer counters show cache outcomes and SQL attempts per run.',
-      'Failures are explicit: Redis, decoding and database errors return a sanitized 503 problem response instead of silently falling back.',
+    title: 'Moved six rule services off JBoss onto Spring Boot',
+    metric: { value: '50%', label: 'lower latency, 42% more throughput' },
+    system: 'Six Drools/KIE rule services running on JBoss EAP and WildFly.',
+    constraint: 'Slow startup and slow deployments on the JBoss and WildFly application servers.',
+    change:
+      'Migrated them to Spring Boot on Java 17/21 with Kogito, asynchronous processing, lazy loading and JVM tuning.',
+    result: '85% faster startup and deployments, 50% lower latency and 42% higher throughput.',
+  },
+  {
+    title: 'Cut dispute call time with an AI reporting service',
+    metric: { value: '28 → 24 min', label: 'average call, about 14% shorter' },
+    system: 'Reporting for lost/stolen card and dispute cases, handled on customer calls.',
+    constraint: 'These calls averaged 28 minutes each.',
+    change:
+      'Built an AI-assisted reporting service with RAG document retrieval, and owned its chunking, model selection and deployment decisions.',
+    result: 'Average call time for these cases fell from 28 to 24 minutes.',
+  },
+]
+
+export const alsoOwned: string[] = [
+  'Moved 100% of fraud and dispute cases off manual back-office work onto application workflows, across 21 Spring Boot microservices, several built from scratch.',
+  'Coordinate 30+ production releases a year with canary, blue-green, rolling and feature-flag deployments to OpenShift through Jenkins, Harness and Tekton.',
+  'Hardened integrations with downstream banking systems (Apache Camel, CXF, Apigee) with retries, timeouts, circuit breakers and fallbacks, and Kafka events for async work.',
+  'Mentored 13 engineers as team technical lead: reviewing and approving pull requests, guiding design, and turning requirements into estimates.',
+  'Use AI coding assistants daily with a design-first, review-every-line discipline: low-level design first, scoped tasks to Copilot or Devin, every line reviewed.',
+]
+
+export const skills: { group: string; items: string }[] = [
+  { group: 'Languages', items: 'Java 11/17/21, Python, SQL' },
+  { group: 'Backend', items: 'Spring Boot, Spring Data JPA, Hibernate, REST, SOAP, microservices' },
+  { group: 'Integration', items: 'Apache Camel, CXF, Apigee, Apache Kafka' },
+  { group: 'Data', items: 'Oracle, PostgreSQL, MongoDB, Redis' },
+  { group: 'Reliability', items: 'JVM and G1GC tuning, root cause analysis, circuit breakers, Splunk, Grafana, ELK' },
+  { group: 'Security', items: 'Spring Security, OAuth2, JWT, mTLS, SonarQube, Snyk' },
+  { group: 'Delivery', items: 'Kubernetes, OpenShift, Docker, GCP, Jenkins, Tekton, Harness, Maven' },
+  { group: 'AI tooling', items: 'RAG, LangGraph, LangChain, LLM evaluation, Claude Code, Copilot' },
+]
+
+export const credentials = [
+  { label: 'B.Tech, Computer Science and Engineering', detail: 'SRM University, Chennai, 2019' },
+  {
+    label: 'Google Cloud skill badge',
+    detail: 'Develop Serverless Applications on Cloud Run',
+    url: 'https://www.credly.com/badges/9157ea15-c81b-41aa-a7f1-a1b2156e3468/public_url',
+  },
+]
+
+/* ───────────────────────── Projects ───────────────────────── */
+
+export type Detail = { heading: string; body: string }
+
+export const tracelens = {
+  name: 'TraceLens',
+  language: 'Java',
+  summary:
+    'A local lab that reproduces a cache stampede on a Spring Boot service, measures it, and proves the fix. Redis cache-aside in front of PostgreSQL, traced end to end with OpenTelemetry.',
+  proof: {
+    title: 'Product SQL reads per 32-request burst',
+    note: 'Every one of 5 cohorts per mode matched. One instance, one key, a synthetic 100 ms database delay. Without coalescing, up to 16 queries ran at once.',
+    rows: [
+      { label: 'Warm cache', value: 0 },
+      { label: 'Cold key, no coalescing', value: 32 },
+      { label: 'Cold key, per-key coalescing', value: 1 },
     ],
-    stack: ['Java 25', 'Spring Boot', 'Redis', 'PostgreSQL', 'OpenTelemetry', 'Jaeger', 'Docker Compose'],
-    repo: 'https://github.com/iam-mkd/TraceLens',
-    language: 'Java',
-    command: {
-      label: 'Run the lab',
-      lines: ['docker compose up --build --wait', 'curl http://127.0.0.1:8080/api/products/1'],
+    max: 32,
+    conclusion:
+      'Coalescing turned 32 duplicate database reads into one, inside one instance. It doesn’t claim anything across replicas.',
+  },
+  stack: ['Java 25', 'Spring Boot', 'Redis', 'PostgreSQL', 'OpenTelemetry', 'Jaeger', 'Docker Compose'],
+  repo: 'https://github.com/iam-mkd/TraceLens',
+  details: [
+    {
+      heading: 'How the experiment runs',
+      body: '32 HTTP workers send one request each through a client barrier, against a fixed database pool of 16. Baseline, failure and mitigation modes rotate order across five cohorts, and every cohort is drained before the next one starts.',
     },
-    facts: [
-      { label: 'Experiment', value: 'Cache stampede' },
-      { label: 'Burst', value: '32 requests × 5 cohorts' },
-      { label: 'Traces', value: 'OTel Java agent' },
+    {
+      heading: 'How coalescing works',
+      body: 'After a miss, requests join a per-key in-flight future. The leader rechecks Redis, queries PostgreSQL only if still missing, writes the cache and completes the future; followers share the result or the failure.',
+    },
+    {
+      heading: 'How failures surface',
+      body: 'Redis, decoding and database errors return a sanitized 503 problem response instead of silently falling back. Correlation IDs tie client samples to JSON logs and Jaeger traces.',
+    },
+  ] as Detail[],
+}
+
+export const runweave = {
+  name: 'RunWeave',
+  language: 'Python',
+  summary:
+    'A test harness for AI agents: evals with pass-rate gates, load tests, seeded provider faults and version comparisons. Runs locally and offline, no API key. Released as v0.1 on PyPI.',
+  report: {
+    caption: 'Example output from the RunWeave docs',
+    lines: [
+      { text: '$ runweave eval', tone: 'cmd' },
+      { text: 'word-count on smoke: 4/4 cases passed (100%), p95 2.8 ms, 0 tokens, $0', tone: 'ok' },
+      { text: 'Gates passed.', tone: 'ok' },
+      { text: '$ runweave bench', tone: 'cmd' },
+      { text: 'faults none, concurrency 1:  164.5 runs/s, p95 1.2 ms, 0/32 failed', tone: 'plain' },
+      { text: 'faults none, concurrency 4:  173.85 runs/s, p95 2.9 ms, 0/32 failed', tone: 'plain' },
+      { text: 'faults none, concurrency 16: 151.12 runs/s, p95 9.9 ms, 0/32 failed', tone: 'plain' },
+    ] as { text: string; tone: 'cmd' | 'ok' | 'plain' }[],
+    note: 'A failed gate exits 1, so the pull request fails. RunWeave’s own regression gate runs 13 offline cases and 68 assertions.',
+  },
+  stack: ['Python', 'FastAPI', 'asyncio', 'PostgreSQL', 'OpenTelemetry', 'React'],
+  repo: 'https://github.com/iam-mkd/RunWeave',
+  install: 'uv tool install runweave',
+  details: [
+    {
+      heading: 'What it checks',
+      body: 'Each eval case asserts on output, schema, tools called, latency and cost. With a baseline, any case that passed before and fails now fails the gate, even if the pass rate is still above the minimum.',
+    },
+    {
+      heading: 'Faults and load',
+      body: 'Seeded faults inject rate limits, 5xx errors, timeouts, cut-off streams and broken tool calls. Load tests sweep concurrency and report throughput, p95/p99, queue wait, event-loop lag and duplicate writes after lost responses.',
+    },
+    {
+      heading: 'Bring any agent',
+      body: 'A decorated Python function, any HTTP service, or the OpenAI Agents SDK, Claude Agent SDK and LangGraph. An LLM proxy replays fixtures so tests are free and deterministic.',
+    },
+  ] as Detail[],
+}
+
+export type MoreProject = {
+  slug: string
+  name: string
+  language: 'Java' | 'Python'
+  summary: string
+  stack: string[]
+  repo: string
+  details: Detail[]
+  example?: { label: string; code: string }[]
+  link?: { label: string; href: string }
+}
+
+export const moreProjects: MoreProject[] = [
+  {
+    slug: 'url-shortener',
+    name: 'URL Shortener',
+    language: 'Java',
+    summary:
+      'Spring Boot service with Snowflake-style IDs, Base62 codes, a Redis-first redirect path, rate limiting and click analytics in MongoDB.',
+    stack: ['Java 17', 'Spring Boot 3', 'MongoDB', 'Redis'],
+    repo: 'https://github.com/iam-mkd/URL-Shortener',
+    details: [
+      {
+        heading: 'When codes stay unique',
+        body: 'A 64-bit ID is built from a timestamp, a worker ID and a per-millisecond sequence, then Base62-encoded. Codes stay unique as long as every running instance has its own worker ID and no instance’s clock moves backwards. Those are the two assumptions a deployment has to guarantee.',
+      },
+      {
+        heading: 'Redirect path',
+        body: 'Redirects read Redis first and fall back to MongoDB, which also stores click events and expires links through a TTL index. A Redis fixed-window limiter guards link creation.',
+      },
     ],
   },
   {
     slug: 'scoutflow',
     name: 'ScoutFlow',
+    language: 'Python',
     summary:
-      'An autonomous research agent and scraping API that turns a task like "best DDR5 deals under ₹50,000" into tool calls, typed records and a grounded answer.',
-    detail: [
-      'The agent picks its own tools (search, product details, compare, scrape, RAG search) and extracts products into a validated Pydantic model rather than feeding raw HTML to a model.',
-      'A deterministic value-score engine ranks results on speed, latency, capacity, rating and price per GB, so the cheapest 8 GB stick is never called the best deal.',
-      'Runs locally on Ollama with native tool calling and falls back to Groq or Gemini. A 30-case golden evaluation suite grades intent, tool choice, ranking and grounding offline.',
-    ],
+      'An agent that turns “best DDR5 deals under ₹50,000” into tool calls, typed product records and a grounded recommendation, with a deterministic value score.',
     stack: ['Python', 'FastAPI', 'LangChain', 'ChromaDB', 'Ollama', 'Groq', 'Pydantic'],
     repo: 'https://github.com/iam-mkd/ScoutFlow',
-    language: 'Python',
-    facts: [
-      { label: 'Tests', value: '56 / 56 passing' },
-      { label: 'Golden eval', value: '30 / 30 offline' },
-      { label: 'Inference', value: 'Local first' },
+    details: [
+      {
+        heading: '30 / 30 offline evaluation cases',
+        body: 'Intent and constraint extraction (8), tool selection and argument hygiene (6), product ranking and value scoring (6), grounding against scraped prices (6), and edge cases like a ₹100 budget or conflicting constraints (4). With live models the same suite scores 18 / 30, which is why the offline grader exists.',
+      },
+      {
+        heading: 'Value, not lowest price',
+        body: 'A deterministic score weighs speed, CAS latency, capacity, rating and review confidence against price per GB, so a cheap 8 GB stick never wins “best deal”.',
+      },
     ],
-  },
-  {
-    slug: 'url-shortener',
-    name: 'URL Shortener',
-    summary:
-      'A production-style shortener with Snowflake IDs, Base62 codes, a cache-first redirect path, rate limiting and click analytics.',
-    detail: [
-      'Snowflake-style 64-bit IDs are encoded to Base62, so codes are short, URL-safe and collision-free without a coordination round trip.',
-      'Redirects read Redis first and fall back to MongoDB, which also stores click events and expires links through a TTL index. A Redis fixed-window limiter guards creation.',
-    ],
-    stack: ['Java 17', 'Spring Boot 3', 'MongoDB', 'Redis'],
-    repo: 'https://github.com/iam-mkd/URL-Shortener',
-    language: 'Java',
-    facts: [
-      { label: 'IDs', value: 'Snowflake + Base62' },
-      { label: 'Redirect', value: 'Cache first' },
-      { label: 'Expiry', value: 'Mongo TTL index' },
-    ],
+    link: {
+      label: 'ScoutFlow evaluation suite on GitHub',
+      href: 'https://github.com/iam-mkd/ScoutFlow#-deterministic-golden-evaluation-suite',
+    },
   },
   {
     slug: 'log-analyser',
     name: 'Production Issue Analyser',
-    summary:
-      'A FastAPI service that reads an error and its logs and returns a summary, a severity and the next thing to check.',
-    detail: [
-      'Send the service name, the error and raw logs; Gemini returns structured JSON with a severity of LOW, MEDIUM, HIGH or CRITICAL and a concrete recommendation.',
-      'Built for the first five minutes of an incident, when a HikariCP timeout and a PostgreSQL slot error need to become one sentence someone can act on.',
-    ],
-    stack: ['Python', 'FastAPI', 'Gemini API', 'uv'],
-    repo: 'https://github.com/iam-mkd/AI-Powered-Production-Issue-Analyser',
     language: 'Python',
-    facts: [
-      { label: 'Endpoint', value: 'POST /chat' },
-      { label: 'Output', value: 'Typed JSON' },
+    summary:
+      'A FastAPI endpoint that turns an error and its logs into a summary, a severity and the next thing to check, with a schema-validated response.',
+    stack: ['Python', 'FastAPI', 'Gemini API', 'Pydantic'],
+    repo: 'https://github.com/iam-mkd/AI-Powered-Production-Issue-Analyser',
+    details: [
+      {
+        heading: 'What goes to Gemini',
+        body: 'Exactly the three fields you post (service, error and logs), unredacted, wrapped in a prompt that marks them as untrusted input rather than instructions. Nothing is stored. Strip credentials and customer data from logs before sending them.',
+      },
+    ],
+    example: [
+      {
+        label: 'Request',
+        code: `{
+  "service": "payment-service",
+  "error": "Database connection pool exhausted",
+  "logs": "ERROR HikariPool-1 - Connection is not available"
+}`,
+      },
+      {
+        label: 'Response',
+        code: `{
+  "summary": "The payment service cannot acquire a PostgreSQL connection because pool capacity is exhausted.",
+  "severity": "HIGH",
+  "recommendation": "Inspect active sessions for leaked or long-running connections and review pool size against the PostgreSQL limit."
+}`,
+      },
     ],
   },
 ]
 
-export type Role = {
-  company: string
-  title: string
-  period: string
-  location: string
-  points: string[]
-  stack: string[]
-}
+/* ───────────────────────── Recently ───────────────────────── */
 
-export const experience: Role[] = [
+export type Update = { date: string; title: string; body: string; url: string; source: 'GitHub' | 'LinkedIn' }
+
+/** Curated, newest first. Add LinkedIn posts here with source: 'LinkedIn'. */
+export const updates: Update[] = [
   {
-    company: 'Tata Consultancy Services',
-    title: 'Java Developer',
-    /** TODO(you): set your real start month, e.g. 'Aug 2023 – now' */
-    period: 'Current role',
-    location: 'Chennai',
-    points: [
-      'Build and maintain backend services and REST APIs with Spring Boot and Java 21.',
-      'Design integration routes with Apache Camel that connect internal systems and external partners.',
-      'Ship and run services in containers on OpenShift and Kubernetes.',
-    ],
-    stack: ['Java 21', 'Spring Boot', 'Apache Camel', 'OpenShift', 'Kubernetes', 'REST'],
+    date: '2026-11-23',
+    title: 'RunWeave now catches agents that write twice',
+    body: 'When a response is lost after a write and the agent retries, the run often succeeds anyway. Load tests now count those duplicate writes, and evals can assert exactly-once effects.',
+    url: 'https://github.com/iam-mkd/RunWeave',
+    source: 'GitHub',
+  },
+  {
+    date: '2026-11-20',
+    title: 'RunWeave v0.1 is public',
+    body: 'First public release: install with uv or pip, a quickstart that CI runs exactly as written, framework examples that run offline, and a desktop app around the workspace.',
+    url: 'https://github.com/iam-mkd/RunWeave',
+    source: 'GitHub',
+  },
+  {
+    date: '2026-10-28',
+    title: 'TraceLens reproduces a cache stampede, then fixes it',
+    body: 'A cold key under a 32-request burst caused 32 database reads; per-key coalescing brought it to 1. Traces in Jaeger show the leader and its followers.',
+    url: 'https://github.com/iam-mkd/TraceLens',
+    source: 'GitHub',
   },
 ]
-
-export const skills: { group: string; items: string[] }[] = [
-  { group: 'Languages', items: ['Java', 'Python', 'TypeScript', 'SQL'] },
-  { group: 'Backend', items: ['Spring Boot', 'Apache Camel', 'FastAPI', 'REST APIs', 'asyncio'] },
-  { group: 'Data', items: ['PostgreSQL', 'Redis', 'MongoDB', 'ChromaDB'] },
-  { group: 'Platform', items: ['OpenShift', 'Kubernetes', 'Docker', 'GitHub Actions'] },
-  { group: 'Observability', items: ['OpenTelemetry', 'Jaeger', 'Micrometer', 'Structured logs'] },
-  { group: 'AI tooling', items: ['Agent evals', 'RAG', 'LangGraph', 'Ollama'] },
-]
-
-/**
- * LinkedIn posts and features. LinkedIn has no public API for this,
- * so add them by hand. Newest first. They show in "Recently" alongside
- * your live GitHub activity.
- * TODO(you): add your recent posts, e.g.
- * { date: '2026-11-18', title: 'What a cache stampede looks like in Jaeger', url: 'https://www.linkedin.com/posts/…', kind: 'post' }
- */
-export type Post = { date: string; title: string; url: string; kind: 'post' | 'article' | 'feature' }
-export const posts: Post[] = []

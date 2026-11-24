@@ -15,14 +15,9 @@ Open http://localhost:5173.
 
 ## Edit content
 
-All personal content lives in [`src/content.ts`](src/content.ts): profile, links, projects, experience, skills and LinkedIn posts. The trace in the hero is in [`src/trace.ts`](src/trace.ts).
+All personal content lives in [`src/content.ts`](src/content.ts): profile, experience and case studies, skills, projects and the "Recently" updates. The hero trace is in [`src/trace.ts`](src/trace.ts). The résumé PDF is `public/Mrinmoy-Kumar-Das-Resume.pdf`; replace the file to update it.
 
-Still to fill in (empty values are hidden on the site):
-
-- `profile.linkedin`: your LinkedIn URL
-- `profile.resume`: put `resume.pdf` in `public/` and set this to `'/resume.pdf'`
-- `posts`: recent LinkedIn posts or features, shown in "Recently" next to live GitHub activity
-- `experience[0].period`: your start date at TCS
+To add a LinkedIn post to "Recently", add an entry to `updates` with `source: 'LinkedIn'`.
 
 ## Scripts
 

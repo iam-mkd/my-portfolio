@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, m } from 'motion/react'
 import { Check, Copy } from './icons'
 import { copyText } from '../clipboard'
 
@@ -22,7 +22,7 @@ export function CopyButton({ text, label, children }: { text: string; label: str
       }}
     >
       <AnimatePresence mode="wait" initial={false}>
-        <motion.span
+        <m.span
           key={done ? 'done' : 'idle'}
           className="copy-icon"
           initial={{ opacity: 0, scale: 0.6 }}
@@ -31,7 +31,7 @@ export function CopyButton({ text, label, children }: { text: string; label: str
           transition={{ duration: 0.15 }}
         >
           {done ? <Check /> : <Copy />}
-        </motion.span>
+        </m.span>
       </AnimatePresence>
       {children && <span>{done ? 'Copied' : children}</span>}
       <span className="sr-only" aria-live="polite">
