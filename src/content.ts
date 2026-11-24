@@ -43,7 +43,7 @@ export const role = {
   client: 'Citigroup, US Credit Retail Services',
   location: 'Chennai',
   summary:
-    'Seven years building Java and Spring Boot payment, fraud and dispute services for Citi, including services built from scratch.',
+    'Seven years delivering Java/Spring Boot and Python services for Citi’s fraud and dispute work, including services built from scratch.',
 }
 
 export const caseStudies: CaseStudy[] = [
@@ -66,12 +66,12 @@ export const caseStudies: CaseStudy[] = [
     result: '85% faster startup and deployments, 50% lower latency and 42% higher throughput.',
   },
   {
-    title: 'Cut dispute call time with an AI reporting service',
+    title: 'Cut dispute call time with a production RAG service',
     metric: { value: '28 → 24 min', label: 'average call, about 14% shorter' },
     system: 'Reporting for lost/stolen card and dispute cases, handled on customer calls.',
     constraint: 'These calls averaged 28 minutes each.',
     change:
-      'Built an AI-assisted reporting service with RAG document retrieval, and owned its chunking, model selection and deployment decisions.',
+      'Built a production RAG pipeline end to end, with document chunking, embeddings in a Qdrant vector database, and retrieval and context injection to ground LLM answers, along with its frontend.',
     result: 'Average call time for these cases fell from 28 to 24 minutes.',
   },
 ]
@@ -80,19 +80,22 @@ export const alsoOwned: string[] = [
   'Moved 100% of fraud and dispute cases off manual back-office work onto application workflows, across 21 Spring Boot microservices, several built from scratch.',
   'Coordinate 30+ production releases a year with canary, blue-green, rolling and feature-flag deployments to OpenShift through Jenkins, Harness and Tekton.',
   'Hardened integrations with downstream banking systems (Apache Camel, CXF, Apigee) with retries, timeouts, circuit breakers and fallbacks, and Kafka events for async work.',
-  'Mentored 13 engineers as team technical lead: reviewing and approving pull requests, guiding design, and turning requirements into estimates.',
-  'Use AI coding assistants daily with a design-first, review-every-line discipline: low-level design first, scoped tasks to Copilot or Devin, every line reviewed.',
+  'Mentored 13 engineers as team technical lead: reviewing and approving pull requests, setting coding standards, guiding implementation design and leading estimations in grooming.',
+  'Brought AI coding assistants into daily engineering: GitHub Copilot and Devin for analysis, coding, debugging, code review and test generation, with every generated change reviewed against internal security policy.',
 ]
 
 export const skills: { group: string; items: string }[] = [
   { group: 'Languages', items: 'Java 11/17/21, Python, SQL' },
-  { group: 'Backend', items: 'Spring Boot, Spring Data JPA, Hibernate, REST, SOAP, microservices' },
+  { group: 'Backend', items: 'Spring Boot, Spring Cloud, Spring Data JPA, Hibernate, REST, SOAP, microservices' },
   { group: 'Integration', items: 'Apache Camel, CXF, Apigee, Apache Kafka' },
-  { group: 'Data', items: 'Oracle, PostgreSQL, MongoDB, Redis' },
-  { group: 'Reliability', items: 'JVM and G1GC tuning, root cause analysis, circuit breakers, Splunk, Grafana, ELK' },
-  { group: 'Security', items: 'Spring Security, OAuth2, JWT, mTLS, SonarQube, Snyk' },
+  { group: 'Data', items: 'Oracle, PostgreSQL, MongoDB, Redis, query optimization' },
+  {
+    group: 'Reliability',
+    items: 'JVM and G1GC tuning, root cause analysis, circuit breakers, Splunk, Grafana, ELK, ServiceNow',
+  },
+  { group: 'Security and testing', items: 'Spring Security, OAuth2, JWT, mTLS, JUnit, Mockito, TDD, SonarQube, Snyk' },
   { group: 'Delivery', items: 'Kubernetes, OpenShift, Docker, GCP, Jenkins, Tekton, Harness, Maven' },
-  { group: 'AI tooling', items: 'RAG, LangGraph, LangChain, LLM evaluation, Claude Code, Copilot' },
+  { group: 'AI tooling', items: 'RAG, Qdrant, embeddings, LangGraph, LangChain, LLM evaluation, Claude Code, Copilot' },
 ]
 
 export const credentials = [
