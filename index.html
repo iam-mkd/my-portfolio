@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mrinmoy Kumar Das · Java developer</title>
+    <meta
+      name="description"
+      content="Mrinmoy Kumar Das, Java developer at Tata Consultancy Services in Chennai. Backend systems, APIs and integrations with Spring Boot, Apache Camel and OpenShift, plus open-source reliability and AI agent testing tools."
+    />
+    <meta name="theme-color" content="#13171d" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Mrinmoy Kumar Das, Java developer" />
+    <meta
+      property="og:description"
+      content="Backend systems, APIs and integrations in Java, and the tooling that shows you exactly where they break."
+    />
+    <meta name="twitter:card" content="summary" />
+    <script>
+      ;(function () {
+        try {
+          var t = localStorage.getItem('theme')
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+          }
+          document.documentElement.dataset.theme = t
+        } catch (e) {}
+      })()
+    </script>
+  </head>
+  <body>
+    <noscript>
+      <p style="padding: 24px; font-family: system-ui">
+        Mrinmoy Kumar Das, Java developer. This site needs JavaScript. Find my work at
+        <a href="https://github.com/iam-mkd">github.com/iam-mkd</a>.
+      </p>
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
